@@ -1,6 +1,7 @@
 import clone from 'clone';
 import { parse } from './feed';
 
+const UPDATE_FEED_NAME = 'updateFeeds';
 const CACHE_EXP = 21600;
 const CACHE_MAX_SIZE = 1024 * 100;
 
@@ -63,11 +64,27 @@ function updateFeed(k) {
 }
 
 export function updateFeeds() {
-    for(let k in feeds) {
+    for (let k in feeds) {
         try {
             updateFeed(k);
-        } catch(e) {
+        } catch (e) {
             console.error(e);
         }
     }
 }
+
+function existsTrigger(triggers, name) {
+    return triggers.some((t) => t.getHandlerFunction() == name)
+}
+
+function initTrigger(name) {
+    let triggers = ScriptApp.getProjectTriggers();
+    if (!existsTrigger(triggers, name)) {
+        ScriptApp.newTrigger(name)
+            .timeBased()
+            .everyMinutes(10)
+            .create();
+    }
+}
+
+initTrigger(UPDATE_FEED_NAME);
