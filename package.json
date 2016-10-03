@@ -1,7 +1,7 @@
 {
-  "name": "gas-from-scratch",
-  "version": "0.1.144",
-  "description": "Google Apps Script from scratch",
+  "name": "gas-feed",
+  "version": "0.1.0",
+  "description": "Google Apps Script Feed parser",
   "main": "index.js",
   "scripts": {
     "test": "BABEL_CACHE_PATH=.cache/babel.json tape -r babel-register tests/local/**/*.js",
@@ -14,7 +14,9 @@
     "apps",
     "script",
     "gas",
-    "template"
+    "feed",
+    "rss",
+    "atom"
   ],
   "author": "Jungle",
   "license": "MIT",
@@ -36,6 +38,8 @@
   "dependencies": {
     "babel-runtime": "^6.11.6",
     "gas-core": "^0.1.2",
+    "sanitizer": "^0.1.3",
+    "striptags": "^2.1.1",
     "transducers-js": "^0.4.174"
   }
 }
