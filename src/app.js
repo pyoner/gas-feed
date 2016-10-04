@@ -8,12 +8,15 @@ const CACHE_MAX_SIZE = 1024 * 100;
 let memCache = CacheService.getScriptCache();
 let feeds = {
     habr: 'https://habrahabr.ru/rss/',
+    geektimes: 'https://geektimes.ru/rss/',
+    tjournal: 'https://tjournal.ru/rss',
+    vc: 'https://vc.ru/feed',
 }
 
 let cacheFolder = getCacheFolder(getScriptFolder());
 let cache = {
     get(key) {
-        return memCache.get(key) || getCacheFile(cacheFolder, key).getBlob().getDataAsString();
+        return memCache.get(key) || getCacheFile(cacheFolder, key).getBlob().getDataAsString() || null;
     },
     put(key, value, exp) {
         memCache.put(key, value, exp);
@@ -48,8 +51,7 @@ function getCacheFile(cacheFolder, name) {
         return files.next();
     }
 
-    let content = JSON.stringify({});
-    return cacheFolder.createFile(name, content, MimeType.JAVASCRIPT);
+    return cacheFolder.createFile(name, '', MimeType.JAVASCRIPT);
 }
 
 function stringifyFeed(obj) {
