@@ -5,9 +5,51 @@ const UPDATE_FEED_NAME = 'updateFeeds';
 const CACHE_EXP = 21600;
 const CACHE_MAX_SIZE = 1024 * 100;
 
-let cache = CacheService.getScriptCache();
+let memCache = CacheService.getScriptCache();
 let feeds = {
     habr: 'https://habrahabr.ru/rss/',
+}
+
+let cacheFolder = getCacheFolder(getScriptFolder());
+let cache = {
+    get(key) {
+        return memCache.get(key) || getCacheFile(cacheFolder, key).getBlob().getDataAsString();
+    },
+    put(key, value, exp) {
+        memCache.put(key, value, exp);
+        getCacheFile(cacheFolder, key).setContent(value);
+    }
+}
+
+function getScriptFolder() {
+    let id = ScriptApp.getScriptId();
+    let file = DriveApp.getFileById(id);
+    let folders = file.getParents();
+
+    let folder = null;
+    while (folders.hasNext()) {
+        folder = folders.next();
+    }
+    return folder || DriveApp.getRootFolder();
+}
+
+function getCacheFolder(parentFolder, name = '.cache') {
+    let folders = parentFolder.getFoldersByName(name);
+    if (folders.hasNext()) {
+        return folders.next();
+    }
+
+    return parentFolder.createFolder(name);
+}
+
+function getCacheFile(cacheFolder, name) {
+    let files = cacheFolder.getFilesByName(name);
+    if (files.hasNext()) {
+        return files.next();
+    }
+
+    let content = JSON.stringify({});
+    return cacheFolder.createFile(name, content, MimeType.JAVASCRIPT);
 }
 
 function stringifyFeed(obj) {
