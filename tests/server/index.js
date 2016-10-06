@@ -2,19 +2,26 @@ import { getLog } from 'gas-core';
 import test from 'tape';
 
 export function doGet(event) {
-    test('test 1', (t) => {
-        t.equal(1, 1);
-        t.end();
-    });
+    test('test max size of cache', (t) => {
+        const CACHE_MAX_SIZE = 1024 * 100;
+        let cache = CacheService.getScriptCache();
+        let k = 'test_max_size_of_cache_100KB';
+        let data = '';
 
-    test('test 2', (t) => {
-        t.equal(2, 2);
-        t.end();
-    });
+        for (let i = 0; i < CACHE_MAX_SIZE; i++) {
+            data += '1';
+        }
 
-    test('test process beforeExit', (t) => {
-        process.once('beforeExit', () => {
-            t.equal(3, 3);
+        t.test('100KB', (t) => {
+            cache.put(k, data);
+            let result = cache.get(k);
+            t.equal(result.length, data.length);
+            t.end();
+        });
+
+        t.test('> 100KB throw Exception', (t) => {
+            let fn = () => cache.put(k, data + '1');
+            t.throws(fn);
             t.end();
         });
     });
